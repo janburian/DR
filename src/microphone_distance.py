@@ -28,17 +28,20 @@ def Fourier_transform(audio):
     return [spectrum_microphone1, spectrum_microphone2]
 
 
-def count_correlation(spectrums):
-    spectrum_microphone_1 = spectrums[0]
-    spectrum_microphone_2 = spectrums[1]
+def count_correlation(spectres):
+    spectrum_microphone_1 = spectres[0]
+    spectrum_microphone_2 = spectres[1]
 
-    R = spectrum_microphone_1 * spectrum_microphone_2 # Correlation theorem
+    R = np.conj(spectrum_microphone_1) * spectrum_microphone_2  # Correlation theorem
 
     return R
 
 
-def calculate_distance():
-    pass
+def count_distance(time_delay):
+    SPEED_OF_SOUND = 343  # in meters per second
+    distance = time_delay * SPEED_OF_SOUND   # Calculate the distance based on the time delay
+
+    return distance
 
 
 if __name__=="__main__":
@@ -46,20 +49,15 @@ if __name__=="__main__":
     data = load_data(path)
 
     for audio in data:
-        # correlation = count_correlation(audio)
-        spectrums = Fourier_transform(audio)
-        R = count_correlation(spectrums)
+        spectres = Fourier_transform(audio)
+        R = count_correlation(spectres)
         r = np.fft.ifft(R)
-        t = np.argmax(r)
+        time_delay_samples = np.argmax(r)
 
-        # Calculate the time delay in seconds
-        time_delay = t / audio[0]
+        fs = audio[0] # Calculate the time delay in seconds
+        time_delay = time_delay_samples / fs
 
-        # Assuming the speed of sound in air is 343 meters per second
-        speed_of_sound = 343  # in meters per second
-
-        # Calculate the distance based on the time delay
-        distance = time_delay * speed_of_sound
+        distance = count_distance(time_delay)
 
         print(f"Time delay: {time_delay} seconds")
         print(f"Estimated Distance between Microphones: {distance} meters")
