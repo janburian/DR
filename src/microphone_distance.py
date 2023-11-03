@@ -31,6 +31,8 @@ def count_correlation(spectres):
     spectrum_microphone_1 = spectres[0]
     spectrum_microphone_2 = spectres[1]
 
+    phase_difference = np.angle(spectrum_microphone_1[1]) - np.angle(spectrum_microphone_2[0])
+
     R = np.conj(spectrum_microphone_1) * spectrum_microphone_2  # Correlation theorem
 
     return R
@@ -38,7 +40,7 @@ def count_correlation(spectres):
 
 def count_distance(time_delay):
     SPEED_OF_SOUND = 343  # in meters per second
-    distance = time_delay * SPEED_OF_SOUND   # Calculate the distance based on the time delay
+    distance = time_delay * SPEED_OF_SOUND   # calculate the distance based on the time delay
 
     return distance
 
@@ -53,6 +55,7 @@ if __name__=="__main__":
 
         spectres = Fourier_transform(audio_time_domain)
         R = count_correlation(spectres)
+
         r = np.fft.ifft(R)
         time_delay_samples = np.argmax(r)
 
@@ -61,4 +64,4 @@ if __name__=="__main__":
 
         distance = count_distance(time_delay)
 
-        print(f"Time delay: {time_delay} seconds ({filename}) - estimated distance between microphones: {distance} meters")
+        print(f"Time delay: {time_delay} seconds ({filename}) -> estimated distance: {round(distance, 3)} meters")
