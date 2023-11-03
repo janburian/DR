@@ -31,9 +31,15 @@ def count_correlation(spectres):
     spectrum_microphone_1 = spectres[0]
     spectrum_microphone_2 = spectres[1]
 
-    phase_difference = np.angle(spectrum_microphone_1[1]) - np.angle(spectrum_microphone_2[0])
+    phase_difference = np.angle(spectrum_microphone_1) - np.angle(spectrum_microphone_2)
+    phase_difference_sum = np.sum(phase_difference)
+    phase_difference_sum_threshold = 1
 
-    R = np.conj(spectrum_microphone_1) * spectrum_microphone_2  # Correlation theorem
+    if phase_difference_sum > 0 and phase_difference_sum > phase_difference_sum_threshold:
+        R = spectrum_microphone_1 * np.conj(spectrum_microphone_2)  # Correlation theorem
+
+    else:
+        R = np.conj(spectrum_microphone_1) * spectrum_microphone_2  # Correlation theorem
 
     return R
 
@@ -64,4 +70,4 @@ if __name__=="__main__":
 
         distance = count_distance(time_delay)
 
-        print(f"Time delay: {time_delay} seconds ({filename}) -> estimated distance: {round(distance, 3)} meters")
+        print(f"Time delay: {round(time_delay, 4)} seconds ({filename}) -> estimated distance: {round(distance, 4)} meters")
