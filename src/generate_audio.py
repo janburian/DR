@@ -23,5 +23,5 @@ delayed_audio_signal = np.roll(audio_signal, num_delay_samples)  # Shifting audi
 stereo_audio_signal = np.column_stack((audio_signal, delayed_audio_signal))
 
 # Save the stereo audio signal as a WAV file
-# wavfile.write(os.path.join("./data/", OUTPUT_filename), sample_rate, stereo_audio_signal.astype(np.float32))
-wavfile.write(os.path.join(OUTPUT_filename), sample_rate, stereo_audio_signal.astype(np.float32))
+wavfile.write(os.path.join("./data/", OUTPUT_filename), sample_rate, stereo_audio_signal.astype(np.float32))
+# wavfile.write(os.path.join(OUTPUT_filename), sample_rate, stereo_audio_signal.astype(np.float32))
