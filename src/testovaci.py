@@ -1,31 +1,25 @@
 import numpy as np
 from scipy.io import wavfile
-from scipy.signal import correlate
 
-# Load the audio files captured by both microphones
-fs, audio = wavfile.read('data/hit03.wav')
+# Specify audio parameters
+sample_rate = 44100  # Sample rate in Hz
+duration = 1  # Duration of the snap sound in seconds
 
+# Generate a mono snap sound (centered)
+t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)  # Time array
 
-audio_microphone1 = audio[:, 0]  # Left channel
-audio_microphone2 = audio[:, 1]  # Right channel
+# Generate a snap sound for the left channel
+snap_left = np.exp(-t) * np.sin(2 * np.pi * 1000 * t)  # Adjust the frequency as needed
 
-# Perform cross-correlation to find the time delay
-correlation = correlate(audio_microphone1, audio_microphone2, mode='full')
-delay = np.argmax(correlation) - len(audio_microphone1) + 1
+# Generate a snap sound for the right channel
+snap_right = np.exp(-t) * np.sin(2 * np.pi * 1200 * t)  # Adjust the frequency as needed
 
-# Calculate the Fourier Transform of the signals
-spectrum_microphone1 = np.fft.fft(audio_microphone1)
-spectrum_microphone2 = np.fft.fft(audio_microphone2)
+# Normalize the audio signals to the range [-1, 1]
+snap_left = snap_left / np.max(np.abs(snap_left))
+snap_right = snap_right / np.max(np.abs(snap_right))
 
-# Choose the frequency component with the most phase difference
-phase_difference = np.angle(spectrum_microphone2) - np.angle(spectrum_microphone1)
-max_freq_index = np.argmax(np.abs(phase_difference))
-max_freq = max_freq_index / len(phase_difference) * fs
+# Create a stereo audio signal by combining the left and right channels
+stereo_snap_sound = np.column_stack((snap_left, snap_right))
 
-# Calculate the distance based on the time delay and frequency
-speed_of_sound = 343  # Speed of sound in meters per second
-distance = (delay / fs) * speed_of_sound / (2 * np.pi * max_freq)
-
-print(f"Time delay: {delay} samples")
-print(f"Max Phase Difference Frequency: {max_freq} Hz")
-print(f"Estimated Distance between Microphones: {distance} meters")
+# Save the stereo snap sound as a WAV file
+wavfile.write("stereo_snap_sound.wav", sample_rate, stereo_snap_sound.astype(np.float32))
