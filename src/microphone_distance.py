@@ -13,7 +13,6 @@ def load_data(path: Path):
 
     return data
 
-
 def Fourier_transform(audio):
     fs = audio[0]
     audio = audio[1]
@@ -63,11 +62,11 @@ if __name__=="__main__":
         R = count_correlation(spectres)
 
         r = np.fft.ifft(R)
-        time_delay_samples = np.argmax(r)
+        num_delay_samples = np.argmax(r)
 
         fs = audio_time_domain[0] # Calculate the time delay in seconds
-        time_delay = time_delay_samples / fs
+        time_delay = num_delay_samples / fs
 
         distance = count_distance(time_delay)
 
-        print(f"Time delay: {round(time_delay, 4)} seconds ({filename}) -> estimated distance: {round(distance, 4)} meters")
+        print(f"Time delay: {round(time_delay, 4)} seconds; number of delayed samples = {num_delay_samples} ({filename}) -> estimated distance: {round(distance, 4)} meters")
