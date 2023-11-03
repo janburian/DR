@@ -9,7 +9,7 @@ def load_data(path: Path):
     filenames = os.listdir(path)
     for filename in filenames:
         audio = wavfile.read(os.path.join(path, filename))
-        data.append(audio)
+        data.append((audio, filename))
 
     return data
 
@@ -48,15 +48,17 @@ if __name__=="__main__":
     data = load_data(path)
 
     for audio in data:
-        spectres = Fourier_transform(audio)
+        audio_time_domain = audio[0]
+        filename = audio[1]
+
+        spectres = Fourier_transform(audio_time_domain)
         R = count_correlation(spectres)
         r = np.fft.ifft(R)
         time_delay_samples = np.argmax(r)
 
-        fs = audio[0] # Calculate the time delay in seconds
+        fs = audio_time_domain[0] # Calculate the time delay in seconds
         time_delay = time_delay_samples / fs
 
         distance = count_distance(time_delay)
 
-        print(f"Time delay: {time_delay} seconds")
-        print(f"Estimated Distance between Microphones: {distance} meters")
+        print(f"Time delay: {time_delay} seconds ({filename}) - estimated distance between microphones: {distance} meters")
